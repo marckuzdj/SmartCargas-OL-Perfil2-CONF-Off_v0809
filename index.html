@@ -2738,7 +2738,8 @@ window.addEventListener('beforeunload', function (event) {
 	        // REGRA 2: Campos Obrigatórios por Padrão (> 0 e Não Vazios)
 	        // OBRIGATÓRIOS: ROMANEIO, OV, FORNEC_LAST, NF_LAST, VOLUMES
 	        // =========================================================================
-	        if (!vRomaneio || isNaN(nRomaneio) || nRomaneio <= 0) errosDaLinha.push("ROMANEIO inválido ou vazio (deve ser > 0)");
+	     // bkp   if (!vRomaneio || isNaN(nRomaneio) || nRomaneio <= 0) errosDaLinha.push("ROMANEIO inválido ou vazio (deve ser > 0)");
+			if (!vRomaneio || String(vRomaneio).trim() === "" || (!isNaN(vRomaneio) && Number(vRomaneio) <= 0)) errosDaLinha.push("ROMANEIO inválido (não pode ser vazio e, se numérico, deve ser > 0)");
 	        if (!vOv || isNaN(nOv) || nOv <= 0) errosDaLinha.push("OV inválido ou vazio (deve ser > 0)");
 	        if (!vFornecLast || vFornecLast.trim() === "") errosDaLinha.push("FORNEC_LAST não pode ser vazio");
 	        if (!vNfLast || isNaN(nNfLast) || nNfLast <= 0) errosDaLinha.push("NF_LAST inválido ou vazio (deve ser > 0)");
@@ -2865,8 +2866,9 @@ window.addEventListener('beforeunload', function (event) {
         const nNfLast      = parseFloat(vNfLast) || 0;
 
         // REGRA 2: Campos Obrigatórios por Padrão (> 0 e Não Vazios)
-        if (!vRomaneio || isNaN(nRomaneio) || nRomaneio <= 0) errosDaLinha.push("ROMANEIO inválido ou vazio (deve ser > 0)");
-        if (!vOv || isNaN(nOv) || nOv <= 0) errosDaLinha.push("OV inválido ou vazio (deve ser > 0)");
+        // bkp if (!vRomaneio || isNaN(nRomaneio) || nRomaneio <= 0) errosDaLinha.push("ROMANEIO inválido ou vazio (deve ser > 0)");
+        if (!vRomaneio || String(vRomaneio).trim() === "" || (!isNaN(vRomaneio) && Number(vRomaneio) <= 0)) errosDaLinha.push("ROMANEIO inválido (não pode ser vazio e, se numérico, deve ser > 0)");
+		if (!vOv || isNaN(nOv) || nOv <= 0) errosDaLinha.push("OV inválido ou vazio (deve ser > 0)");
         if (!vFornecLast || vFornecLast.trim() === "") errosDaLinha.push("FORNEC_LAST não pode ser vazio");
         if (!vNfLast || isNaN(nNfLast) || nNfLast <= 0) errosDaLinha.push("NF_LAST inválido ou vazio (deve ser > 0)");
         if (!vVolumes || isNaN(nVolumes) || nVolumes <= 0) errosDaLinha.push("VOLUMES inválido ou vazio (deve ser > 0)");
