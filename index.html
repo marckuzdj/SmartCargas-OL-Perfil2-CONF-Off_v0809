@@ -1262,7 +1262,7 @@ function enviarParaServidor(conteudo, liberacao) {
      dispararLogOL('ENVIO_CARGA_ERRO_REDE', `Queda física de comunicação ou timeout. Detalhes: [${err.toString()}]`);
    }
  });
-
+} // 🌟 ESTA CHAVE ESTAVA FALTANDO! (Fecha a função principal enviarParaServidor)
             
             // NOVA FUNÇÃO: Executada apenas quando o operador clica no botão do modal
             function fecharModalSucesso() {
