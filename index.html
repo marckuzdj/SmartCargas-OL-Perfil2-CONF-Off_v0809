@@ -591,7 +591,7 @@
   window.console.log = function() {};
         
    //  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxeW2tRPFpnompPApN4XxeY2DWnZLoIzmzenf8zEdOXctNgtrw-l71ZLGn6QpTOTZkc/exec";
-     
+    const WEB_APP_URL = "https://google.com";
 // =========================================================================
 // NOVO: DICIONÁRIO MESTRE DE REDE (Ajuste os links de deploy de cada UF)
 // =========================================================================
@@ -631,17 +631,29 @@
 
     // FUNÇÃO DE COMUNICAÇÃO - MÉTODO JSONP (O mais estável para GitHub)
     function callServer(action, params, callbackName) {
+        // 🔒 BARREIRA PREVENTIVA: Se a UF não estiver selecionada ainda (ex: no window.onload),
+        // aborta o disparo imediatamente para evitar o erro '<' no console.
+        if (typeof UF_SELECIONADA === 'undefined' || !UF_SELECIONADA) {
+            console.warn(`⚠️ [BLOQUEIO PREVENTIVO] Chamada para '${action}' retida. Aguardando seleção de UF.`);
+            return;
+        }
+
         const script = document.createElement('script');
-        let url = `${WEB_APP_URL}?action=${action}&callback=${callbackName}&_t=${new Date().getTime()}`;
+        
+        // 🌟 CORREÇÃO SÊNIOR APLICADA: Mapeamento dinâmico baseado no dicionário de chaves por Estado
+        let url = `${SCRIPTS_POR_UF[UF_SELECIONADA]}?action=${action}&callback=${callbackName}&_t=${new Date().getTime()}`;
+
         for (let key in params) { 
             url += `&${key}=${encodeURIComponent(params[key])}`; 
         }
+        
         script.src = url;
         // Adicionamos essa linha para garantir que o navegador trate como script
         script.type = "text/javascript"; 
         document.body.appendChild(script);
         script.onload = () => script.remove();
     }
+
 
     // CARREGAMENTO INICIAL
     window.onload = () => {
