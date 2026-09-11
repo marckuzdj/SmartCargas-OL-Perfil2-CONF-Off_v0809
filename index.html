@@ -1110,7 +1110,14 @@ function enviarParaServidor(conteudo, liberacao) {
    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
    body: JSON.stringify(payload)
  })
- .then(response => response.json())
+ .then(response => {
+   // 🌟 BLINDAGEM DE REDE: Verifica se o Google respondeu com sucesso (Status 200)
+   // Se houver um timeout severo ou erro de servidor no Google, 'response.ok' será false
+   if (!response.ok) {
+     throw new Error(`Erro estrutural do Google Web App: Status HTTP ${response.status}`);
+   }
+   return response.json();
+ })
  .then(res => {
    // 4. DESBLOQUEIO COMPLETO DOS INPUTS APÓS RETORNO DO SERVIDOR
    if (fileInput) {
@@ -1135,6 +1142,11 @@ function enviarParaServidor(conteudo, liberacao) {
    btn.disabled = false;
    btn.innerHTML = 'Enviar Base';
    
+   // Garante que o objeto de resposta não seja nulo ou indefinido por quebra de stream
+   if (!res) {
+     throw new Error("Resposta do servidor veio vazia ou corrompida.");
+   }
+
    const textoMensagem = (res.mensagem || res.message || res.msg || "").toString();
    const statusLimpo = (res.status || res.Status || "").toString().toUpperCase();
    const isTrueSuccess = (res.success === true || res.Success === true || res.authorized === true);
@@ -1236,22 +1248,20 @@ function enviarParaServidor(conteudo, liberacao) {
    
    btn.disabled = false;
    btn.innerHTML = 'Enviar Base';
-   exibirAviso('statusEnvio', 'Falha na comunicação: Verifique sua internet.', 'error');
+   
+   // 🌟 TRATAMENTO DINÂMICO DE ERRO: Identifica se o JSON quebrou (resposta corrompida do Google)
+   // ou se a internet caiu de fato.
+   if (err.toString().toUpperCase().indexOf("JSON") !== -1 || err.toString().toUpperCase().indexOf("STATUS HTTP") !== -1) {
+     exibirAviso('statusEnvio', 'O Google processou os dados, mas a resposta falhou por concorrência. Verifique a planilha.', 'error');
+   } else {
+     exibirAviso('statusEnvio', 'Falha na comunicação: Verifique sua internet.', 'error');
+   }
+   
    console.error("Erro crítico de conexão de rede:", err);
    if (typeof dispararLogOL === 'function') {
      dispararLogOL('ENVIO_CARGA_ERRO_REDE', `Queda física de comunicação ou timeout. Detalhes: [${err.toString()}]`);
    }
  });
-}
-
-
-
-
-
-
-
-
-
 
             
             // NOVA FUNÇÃO: Executada apenas quando o operador clica no botão do modal
